@@ -1,0 +1,33 @@
+{
+    "cluster": "invoice",
+    "launchType": "FARGATE",
+    "desiredCount": 1,
+    "enableECSManagedTags": true,
+    "enableExecuteCommand": true,
+    "networkConfiguration": {
+      "awsvpcConfiguration": {
+        "assignPublicIp": "ENABLED",
+        "securityGroups": [
+          "sg-06f3ec225e7dc8004"
+        ],
+        "subnets": [
+          "subnet-00c26ecc28783e2bc",
+          "subnet-0ac2f141f717c98e5"
+        ]
+      }
+    },
+    "propagateTags": "SERVICE",
+    "serviceName": "backend",
+    "taskDefinition": "backend",
+    "serviceConnectConfiguration": {
+      "enabled": true,
+      "namespace": "invoice",
+      "services": [
+        {
+          "portName": "server",
+          "discoveryName": "backend",
+          "clientAliases": [{"port": 5000}]
+        }
+      ]
+    }
+  }

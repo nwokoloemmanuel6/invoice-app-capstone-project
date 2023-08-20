@@ -1,0 +1,54 @@
+{
+    "family": "backend",
+    "executionRoleArn": "arn:aws:iam::747184226799:role/InvoiceServiceExecutionRole",
+    "taskRoleArn": "arn:aws:iam::747184226799:role/InvoiceTaskRole",
+    "networkMode": "awsvpc",
+    "cpu": "256",
+    "memory": "512",
+    "requiresCompatibilities": [ 
+      "FARGATE" 
+    ],
+    "containerDefinitions": [
+      {
+        "name": "backend",
+        "image": "747184226799.dkr.ecr.us-east-1.amazonaws.com/invoice-server",
+        "essential": true,
+        "healthCheck": {
+          "command": [
+            "CMD-SHELL",
+            "node server/bin/node/health-check.js"
+          ],
+          "interval": 30,
+          "timeout": 5,
+          "retries": 3,
+          "startPeriod": 60
+        },
+        "portMappings": [
+          {
+            "name": "server",
+            "containerPort": 5000,
+            "protocol": "tcp", 
+            "appProtocol": "http"
+          }
+        ],
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+              "awslogs-group": "invoice-fargate-cluster",
+              "awslogs-region": "us-east-1",
+              "awslogs-stream-prefix": "invoice"
+          }
+        },
+        "environment": [
+          {"name": "CLIENT_URL", "value": "*"},
+          {"name": "SERVER_URL", "value": "*"},
+          {"name": "AWS_DEFAULT_REGION", "value": "us-east-1"}
+        ],
+        "secrets": [
+          {"name": "AWS_ACCESS_KEY_ID", "valueFrom": "arn:aws:ssm:AWS_REGION:747184226799:parameter/invoice/server/AWS_ACCESS_KEY_ID"},
+          {"name": "AWS_SECRET_ACCESS_KEY", "valueFrom": "arn:aws:ssm:AWS_REGION:747184226799:parameter/invoice/server/AWS_SECRET_ACCESS_KEY"},
+          {"name": "DB_URL", "valueFrom": "arn:aws:ssm:AWS_REGION:747184226799:parameter/invoice/server/DB_URL"}
+        ]
+      }
+    ]
+  }

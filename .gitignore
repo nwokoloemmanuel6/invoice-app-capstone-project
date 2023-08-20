@@ -1,0 +1,5 @@
+invoice.env
+EKS/terraform/.terraform.lock.hcl
+EKS/terraform/terraform.tfstate
+EKS/terraform
+EKS/kubernetes

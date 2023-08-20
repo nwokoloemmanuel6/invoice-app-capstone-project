@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  server:
+    environment:
+      CLIENT_URL: "https://80-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}" # "http://localhost:3000" Use this if you're using vscode
+      SERVER_URL: "https://5000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}" # "http://localhost:5000" Use this if you're using vscode
+      DB_URL: "${DB_URL}"
+    build: ./server
+    ports:
+      - "5000:5000"
+    networks:
+      - internal-network
+    restart: on-failure
+  client:
+    environment:
+      REACT_APP_API: "https://5000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"  # "http://localhost:5000" Use this if you're using vscode
+    build: ./client
+    ports:
+      - "80:80"
+    networks:
+      - internal-network
+    restart: on-failure
+  mongo:
+    image: mongo:6.0
+    user: "999:999" # MongoDB Docker image runs as mongodb user with UID=999 by default
+    restart: on-failure
+    ports:
+      - '27017:27017'
+    volumes: 
+      - mongo:/data/db
+    networks:
+      - internal-network
+networks: 
+  internal-network:
+    driver: bridge
+    name: invoice
+volumes:
+  mongo:
+    driver: local
